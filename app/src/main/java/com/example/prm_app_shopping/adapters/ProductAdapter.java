@@ -16,14 +16,19 @@ import com.example.prm_app_shopping.databinding.ItemProductBinding;
 import com.example.prm_app_shopping.model.Product;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder>{
 
     Context context;
-    ArrayList<Product> products;
+    List<Product> products;
 
     public ProductAdapter(Context context, ArrayList<Product> products) {
         this.context = context;
+        this.products = products;
+    }
+
+    public ProductAdapter(List<Product> products) {
         this.products = products;
     }
 

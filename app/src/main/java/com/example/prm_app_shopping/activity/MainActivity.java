@@ -1,24 +1,17 @@
 package com.example.prm_app_shopping.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import com.example.prm_app_shopping.R;
 import com.example.prm_app_shopping.adapters.CategoryAdapter;
 import com.example.prm_app_shopping.adapters.ProductAdapter;
+import com.example.prm_app_shopping.api.ProductApi;
 import com.example.prm_app_shopping.databinding.ActivityMainBinding;
 import com.example.prm_app_shopping.model.Category;
 import com.example.prm_app_shopping.model.Product;
@@ -26,6 +19,11 @@ import com.example.prm_app_shopping.model.Product;
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     CategoryAdapter categoryAdapter;
     ArrayList<Category> categories;
     ProductAdapter productAdapter;
-    ArrayList<Product> products;
+    ArrayList<Product> products = new ArrayList<Product>();
     ImageView card, history;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,CardActivity.class);
+                Intent intent = new Intent(MainActivity.this, CartActivity.class);
                 startActivity(intent);
             }
         });
@@ -105,21 +103,47 @@ public class MainActivity extends AppCompatActivity {
 
 
     void initProducts(){
-        products = new ArrayList<>();
-        products.add(new Product("Tủ lạnh Family Hub",
-                "https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture/Apro/Apro_product_29826/tu-lanh-lg-inve_main_845_450.png.webp", "", 12, 12, 1, 1));
-        products.add(new Product("Máy lạnh Panasonic  ", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTX-4D8wC_xmUkxs-5DnvAlOc227my9GWQ9FqrdVOuozn3NHzPwYmcD3gFPN9NTzjYZttU&usqp=CAU", "", 13, 12, 1, 1));
-        products.add(new Product("Máy giặt Panasonic Inverter ", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_6JWyFMoNBjwlEFCukBfC3tW8PVd8bK18eClb7uebP_SbqdeXO-QO6AIq0vXhPrZIFmk&usqp=CAU", "", 14, 12, 1, 1));
-        products.add(new Product("Bếp gas hồng ngoại Taka TK-HG9 ", "https://kingshop.vn/data/products/500/bep-gas-hong-ngoai-taka-tk-hg9-2.jpg", "", 15, 12, 1, 1));
-        products.add(new Product("Tivi SamSung", "https://cdn.tgdd.vn/Files/2018/02/03/1064416/top-5-tivi-samsung-ban-chay-nhat-thang-1-20181-2.jpg", "", 16, 12, 1, 1));
-        products.add(new Product("Cây nước nóng lạnh Kangaroo KG39H", "https://bizweb.dktcdn.net/100/075/453/products/39h-4.jpg?v=1510199027280", "", 17, 12, 1, 1));
+        ArrayList<Product> productsList = new ArrayList<>();
+        ProductApi.productApi.getAllProduct().enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful()) {
+                    List<Product> productList = response.body();
+                    productsList.addAll(productList);
+                    // Tiếp tục xử lý danh sách sản phẩm tại đây
 
+                    productAdapter = new ProductAdapter(MainActivity.this, productsList);
 
-        productAdapter = new ProductAdapter(this, products);
+                    GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
+                    binding.productList.setLayoutManager(layoutManager);
+                    binding.productList.setAdapter(productAdapter);
+                } else {
+                    // Xử lý lỗi nếu có
+                }
+            }
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        binding.productList.setLayoutManager(layoutManager);
-        binding.productList.setAdapter(productAdapter);
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                // Xử lý lỗi nếu có
+            }
+        });
+
+//        products = new ArrayList<Product>();
+//
+//        products.add(new Product("Tủ lạnh Family Hub",
+//                "https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture/Apro/Apro_product_29826/tu-lanh-lg-inve_main_845_450.png.webp", "", 12, 12, 1, 1));
+//        products.add(new Product("Máy lạnh Panasonic  ", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTX-4D8wC_xmUkxs-5DnvAlOc227my9GWQ9FqrdVOuozn3NHzPwYmcD3gFPN9NTzjYZttU&usqp=CAU", "", 13, 12, 1, 1));
+//        products.add(new Product("Máy giặt Panasonic Inverter ", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_6JWyFMoNBjwlEFCukBfC3tW8PVd8bK18eClb7uebP_SbqdeXO-QO6AIq0vXhPrZIFmk&usqp=CAU", "", 14, 12, 1, 1));
+//        products.add(new Product("Bếp gas hồng ngoại Taka TK-HG9 ", "https://kingshop.vn/data/products/500/bep-gas-hong-ngoai-taka-tk-hg9-2.jpg", "", 15, 12, 1, 1));
+//        products.add(new Product("Tivi SamSung", "https://cdn.tgdd.vn/Files/2018/02/03/1064416/top-5-tivi-samsung-ban-chay-nhat-thang-1-20181-2.jpg", "", 16, 12, 1, 1));
+//        products.add(new Product("Cây nước nóng lạnh Kangaroo KG39H", "https://bizweb.dktcdn.net/100/075/453/products/39h-4.jpg?v=1510199027280", "", 17, 12, 1, 1));
+//
+//
+//        productAdapter = new ProductAdapter(this, products);
+//
+//        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+//        binding.productList.setLayoutManager(layoutManager);
+//        binding.productList.setAdapter(productAdapter);
 
     }
 
