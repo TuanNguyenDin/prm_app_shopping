@@ -1,13 +1,26 @@
 package com.example.prm_app_shopping.model;
 
-import java.io.Serializable;
+import com.google.gson.annotations.SerializedName;
 
-public class Product implements Serializable {
-    private String name, image, status;
-    private double price, discount;
+public class Product {
+    @SerializedName("product_name")
+    private String name;
+
+//    @SerializedName("list_price")
+    private String image;
+
+    @SerializedName("title")
+    private String status;
+
+    @SerializedName("list_price")
+    private double price;
+
+    private double discount;
+    private int model_year;
     private int stock, id;
+    private Category category;
 
-    public Product(String name, String image, String status, double price, double discount, int stock, int id) {
+    public Product(String name, String image, String status, double price, double discount, int stock, int id, int model_year) {
         this.name = name;
         this.image = image;
         this.status = status;
@@ -15,6 +28,7 @@ public class Product implements Serializable {
         this.discount = discount;
         this.stock = stock;
         this.id = id;
+        this.model_year= model_year;
     }
 
     public String getName() {
@@ -69,7 +83,14 @@ public class Product implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int model_year) {
         this.id = id;
+    }
+    public int getModel_year() {
+        return model_year;
+    }
+
+    public void setModel_year(int model_year) {
+        this.model_year = model_year;
     }
 }

@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.example.prm_app_shopping.R;
 import com.example.prm_app_shopping.adapters.CategoryAdapter;
 import com.example.prm_app_shopping.adapters.ProductAdapter;
-import com.example.prm_app_shopping.api.ProductApi;
+import com.example.prm_app_shopping.api.ProductApiService;
+import com.example.prm_app_shopping.api.ProductApiService;
 import com.example.prm_app_shopping.databinding.ActivityMainBinding;
 import com.example.prm_app_shopping.model.Category;
 import com.example.prm_app_shopping.model.Product;
@@ -31,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     CategoryAdapter categoryAdapter;
     ArrayList<Category> categories;
     ProductAdapter productAdapter;
-    ArrayList<Product> products = new ArrayList<Product>();
     ImageView card, history;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         categories = new ArrayList<>();
         categories.add(new Category("Các loại Tivi ngon ", "", "#18ab4e", "Some description", 1));
         categories.add(new Category("Các loại Máy lạnh ngon", "", "#fb0504", "Some description", 1));
-        categories.add(new Category("Các loại Máy giặt ngon", "", "#4186ff", "Some description", 1));
-        categories.add(new Category("Các loại Máy lọc nước ngon", "", "#BF360C", "Some description", 1));
+//        categories.add(new Category("Các loại Máy giặt ngon", "", "#4186ff", "Some description", 1));
+//        categories.add(new Category("Các loại Máy lọc nước ngon", "", "#BF360C", "Some description", 1));
         categories.add(new Category("Các loại Bếp ngon", "", "#ff870e", "Some description", 1));
         categories.add(new Category("Khác", "", "#ff6f52", "Some description", 1));
 
@@ -101,10 +101,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     void initProducts(){
         ArrayList<Product> productsList = new ArrayList<>();
-        ProductApi.productApi.getAllProduct().enqueue(new Callback<List<Product>>() {
+        ProductApiService.productApiService.getProducts().enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful()) {
